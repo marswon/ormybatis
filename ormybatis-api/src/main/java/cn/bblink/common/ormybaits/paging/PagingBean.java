@@ -1,4 +1,4 @@
-package cn.bblink.common.mysql.paging;
+package cn.bblink.common.ormybaits.paging;
 
 import java.io.Serializable;
 import java.util.ArrayList;

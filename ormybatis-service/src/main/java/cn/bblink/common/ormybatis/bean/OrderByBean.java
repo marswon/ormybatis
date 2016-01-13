@@ -1,4 +1,4 @@
-package cn.bblink.common.mysql.bean;
+package cn.bblink.common.ormybatis.bean;
 
 import com.google.common.base.CaseFormat;
 
@@ -7,6 +7,7 @@ import com.google.common.base.CaseFormat;
  * @author donghui
  */
 public class OrderByBean {
+	
 	/**
 	 * 字段名
 	 */
@@ -25,19 +26,9 @@ public class OrderByBean {
 		setOper(oper);
 	}
 
-	public String getField() {
-		return field;
-	}
+	public String getField() {return field;}
+	public void setField(String field) {this.field = field;}
 
-	public void setField(String field) {
-		this.field = field;
-	}
-
-	public String getOper() {
-		return oper;
-	}
-
-	public void setOper(String oper) {
-		this.oper = oper;
-	}
+	public String getOper() {return oper;}
+	public void setOper(String oper) {this.oper = oper;}
 }

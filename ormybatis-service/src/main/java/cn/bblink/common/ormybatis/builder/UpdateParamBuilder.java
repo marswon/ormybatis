@@ -1,4 +1,4 @@
-package cn.bblink.common.mysql.builder;
+package cn.bblink.common.ormybatis.builder;
 
 import java.util.Map;
 

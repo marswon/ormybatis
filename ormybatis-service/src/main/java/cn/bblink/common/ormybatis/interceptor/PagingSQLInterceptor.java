@@ -1,4 +1,4 @@
-package cn.bblink.common.mysql.interceptor;
+package cn.bblink.common.ormybatis.interceptor;
 
 import java.sql.Connection;
 import java.util.Properties;
@@ -17,7 +17,7 @@ import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
 
-import cn.bblink.common.mysql.util.ReflectUtil;
+import cn.bblink.common.ormybatis.util.ReflectUtil;
 
 @Intercepts({ @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class }) })
 public class PagingSQLInterceptor implements Interceptor {

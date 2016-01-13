@@ -1,4 +1,4 @@
-package cn.bblink.common.mysql.dao;
+package cn.bblink.common.ormybatis.dao;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
@@ -23,11 +23,11 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.bblink.common.mysql.bean.BaseSqlParamBean;
-import cn.bblink.common.mysql.builder.QueryBuilder;
-import cn.bblink.common.mysql.builder.UpdateParamBuilder;
-import cn.bblink.common.mysql.paging.PagingBean;
-import cn.bblink.common.mysql.util.ReflectUtil;
+import cn.bblink.common.ormybaits.paging.PagingBean;
+import cn.bblink.common.ormybatis.bean.BaseSqlParamBean;
+import cn.bblink.common.ormybatis.builder.QueryBuilder;
+import cn.bblink.common.ormybatis.builder.UpdateParamBuilder;
+import cn.bblink.common.ormybatis.util.ReflectUtil;
 
 import com.google.common.base.CaseFormat;
 

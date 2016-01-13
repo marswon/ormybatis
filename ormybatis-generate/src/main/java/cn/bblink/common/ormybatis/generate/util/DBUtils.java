@@ -1,4 +1,4 @@
-package cn.bblink.common.mysql.generate.util;
+package cn.bblink.common.ormybatis.generate.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,7 +14,6 @@ import org.apache.commons.dbutils.handlers.MapListHandler;
 
 /**
  * jdbc连接tool数据库
- * 
  * @author donghui
  */
 public class DBUtils {

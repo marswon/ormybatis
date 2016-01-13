@@ -1,9 +1,9 @@
-package cn.bblink.common.mysql.service;
+package cn.bblink.common.ormybaits.service;
 
 import java.util.List;
 import java.util.Map;
 
-import cn.bblink.common.mysql.paging.PagingBean;
+import cn.bblink.common.ormybaits.paging.PagingBean;
 
 public interface IBaseOperationService<T> {
 

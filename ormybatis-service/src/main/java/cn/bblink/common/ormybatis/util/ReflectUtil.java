@@ -1,4 +1,4 @@
-package cn.bblink.common.mysql.util;
+package cn.bblink.common.ormybatis.util;
 
 import java.lang.reflect.Field;
 import java.util.Map;

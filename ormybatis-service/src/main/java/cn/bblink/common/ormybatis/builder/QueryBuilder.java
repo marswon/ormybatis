@@ -1,4 +1,4 @@
-package cn.bblink.common.mysql.builder;
+package cn.bblink.common.ormybatis.builder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,8 +10,8 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import cn.bblink.common.mysql.bean.OperationExpressionBean;
-import cn.bblink.common.mysql.bean.OrderByBean;
+import cn.bblink.common.ormybatis.bean.OperationExpressionBean;
+import cn.bblink.common.ormybatis.bean.OrderByBean;
 
 /**
  * 查询构造器

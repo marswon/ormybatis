@@ -1,4 +1,4 @@
-package cn.bblink.common.mysql.generate;
+package cn.bblink.common.ormybatis.generate;
 
 import java.io.FileWriter;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 
-import cn.bblink.common.mysql.generate.util.DBUtils;
+import cn.bblink.common.ormybatis.generate.util.DBUtils;
 
 import com.google.common.base.CaseFormat;
 

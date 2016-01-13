@@ -1,4 +1,4 @@
-package cn.bblink.common.mysql.service;
+package cn.bblink.common.ormybatis.service;
 
 import java.util.List;
 import java.util.Map;
@@ -7,8 +7,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.bblink.common.mysql.dao.BaseDao;
-import cn.bblink.common.mysql.paging.PagingBean;
+import cn.bblink.common.ormybaits.paging.PagingBean;
+import cn.bblink.common.ormybaits.service.IBaseOperationService;
+import cn.bblink.common.ormybatis.dao.BaseDao;
 
 public class BaseServiceImpl<T> implements IBaseOperationService<T> {
 

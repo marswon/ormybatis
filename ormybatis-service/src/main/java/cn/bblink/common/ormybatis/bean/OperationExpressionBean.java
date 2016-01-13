@@ -1,4 +1,4 @@
-package cn.bblink.common.mysql.bean;
+package cn.bblink.common.ormybatis.bean;
 
 /**
  * 运算表达式bean
