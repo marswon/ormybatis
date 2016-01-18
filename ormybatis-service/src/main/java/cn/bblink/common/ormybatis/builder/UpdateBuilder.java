@@ -1,83 +1,133 @@
 package cn.bblink.common.ormybatis.builder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import cn.bblink.common.ormybatis.bean.OperationExpressionBean;
-
 /**
- * 查询构造器
+ * update sql参数构造器
  * @author donghui
  */
 public class UpdateBuilder {
-	private List<OperationExpressionBean> operExpressList = new ArrayList<OperationExpressionBean>();
-	
-	public UpdateBuilder() {}
-	public UpdateBuilder(String field, Object value) {
-		this.set(field, value);
-	}
-	
 	/**
-	 * 等于 (=)
+	 * 查询条件构造器
 	 */
-	public UpdateBuilder set(String field, Object value) {
-		return this.setOperationExpression(field, "=", value);
-	}
-	
+	private WhereBuilder whereBuilder = new WhereBuilder();
+
 	/**
-	 * 等于 (=)
+	 * 修改字段Map
 	 */
-	public UpdateBuilder set(Map<String, Object> paramMap) {
-		if (MapUtils.isNotEmpty(paramMap)) {
-			for (String key : paramMap.keySet()) {
-				this.set(key, paramMap.get(key));
-			}
-		}
+	private UpdateFieldBuilder updateFieldBuilder = new UpdateFieldBuilder();
+
+	/**
+	 * 构造修改的Map字段(updateMap key)和值(updateMap value)
+	 * @param updateFieldMap
+	 * @return
+	 */
+	public UpdateBuilder updateEq(Map<String, Object> updateFieldMap){
+		updateFieldBuilder.eq(updateFieldMap);
 		return this;
 	}
 	
 	/**
-	 * update时 field_name = field_name + 1
-	 */
-	public UpdateBuilder incr(String field) {
-		return this.incr(field, 1);
-	}
-	
-	/**
-	 * update时 field_name = field_name + num
-	 */
-	public UpdateBuilder incr(String field, Number num) {
-		return this.setOperationExpression(field, "incr", num);
-	}
-	
-	/**
-	 * 判断查询条件lis不为空
+	 * 构造修改的字段和值
+	 * @param updateFieldName 
+	 * @param updateValue
 	 * @return
 	 */
-	public boolean isEmptyOperExpressList() {
-		return CollectionUtils.isEmpty(this.operExpressList);
+	public UpdateBuilder updateEq(String updateFieldName, Object updateValue){
+		updateFieldBuilder.eq(updateFieldName, updateValue);
+		return this;
 	}
 	
-    private UpdateBuilder setOperationExpression(String field, String oper, Object value){
-    	if (value == null) {
-			return this;
-		}
-		if (value instanceof String) {
-			if (StringUtils.isBlank((String)value)) {
-				return this;
-			}
-		}
-    	OperationExpressionBean bean = new OperationExpressionBean(field, oper, value);
-    	operExpressList.add(bean);
-    	return this;
-    }
-    
-	public List<OperationExpressionBean> getOperExpressList() {return operExpressList;}
-	public void setOperExpressList(List<OperationExpressionBean> operExpressList) {this.operExpressList = operExpressList;}
+	/**
+	 * 自增 field_name = field_name + 1
+	 */
+	public UpdateBuilder upateIncr(String updateFieldName){
+		updateFieldBuilder.incr(updateFieldName);
+		return this;
+	}
 	
+	/**
+	 * 自增 field_name = field_name + num
+	 */
+	public UpdateBuilder upateIncr(String updateFieldName, Number num){
+		updateFieldBuilder.incr(updateFieldName, num);
+		return this;
+	}
+	
+	/**
+	 * 设置为null
+	 */
+	public UpdateBuilder upateEqNull(String updateFieldName){
+		updateFieldBuilder.eqNull(updateFieldName);
+		return this;
+	}
+	
+	/**
+	 * 查询条件 等于 (=)
+	 */
+	public UpdateBuilder whereEq(String field, Object value) {
+		whereBuilder.eq(field, value);
+		return this;
+	}
+	/**
+	 * 大于(>)
+	 */
+	public UpdateBuilder whereQt(String field, Object value) {
+		whereBuilder.gt(field, value);
+		return this;
+	}
+	
+	/**
+	 * 大于等于(>=) 
+	 */
+	public UpdateBuilder whereGte(String field, Object value) {
+		whereBuilder.gte(field, value);
+		return this;
+	}
+	
+	/**
+	 * 小于(<) 
+	 */
+	public UpdateBuilder whereLt(String field, Object value) {
+		whereBuilder.lt(field, value);
+		return this;
+	}
+	
+	/**
+	 * 小于等于(<=) 
+	 */
+	public UpdateBuilder whereLte(String field, Object value) {
+		whereBuilder.lte(field, value);
+		return this;
+	}
+	
+	/**
+	 * like查询(% + value + %)
+	 */
+	public UpdateBuilder whereLike(String field, Object value) {
+		whereBuilder.like(field, value);
+		return this;
+	}
+	
+	/**
+	 * like查询(value + %)
+	 */
+	public UpdateBuilder whereLikeLeft(String field, Object value) {
+		whereBuilder.likeLeft(field, value);
+		return this;
+	}
+	
+	/**
+	 * like查询(% + value)
+	 */
+	public UpdateBuilder whereLikeRight(String field, Object value) {
+		whereBuilder.likeRight(field, value);
+		return this;
+	}
+	
+	public WhereBuilder getWhereBuilder() {return whereBuilder;}
+	public void setWhereBuilder(WhereBuilder whereBuilder) {this.whereBuilder = whereBuilder;}
+	
+	public UpdateFieldBuilder getUpdateBuilder() {return updateFieldBuilder;}
+	public void setUpdateBuilder(UpdateFieldBuilder updateBuilder) {this.updateFieldBuilder = updateBuilder;}
 }

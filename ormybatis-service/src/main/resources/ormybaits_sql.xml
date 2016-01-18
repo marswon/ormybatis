@@ -1,47 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="baseSql">
-	
-	<select id="selecListByQueryBuilder" resultType="map">
-		SELECT * FROM ${tableName} WHERE 1=1 
-		<if test="data != null">
-			<foreach collection="data.operExpressList" item="item" index="index"> 
-				AND
-				<choose>
-					<when test="item.field == 'id' "> ${primaryKeyName} </when>
-					<otherwise> ${item.field} </otherwise>
-				</choose>
-				<choose>
-					<when test="item.oper == 'like' "> LIKE CONCAT('%', #{item.value}, '%') </when>
-					<when test="item.oper == 'like_left' "> LIKE CONCAT(#{item.value}, '%') </when>
-					<when test="item.oper == 'like_right' "> LIKE CONCAT('%', #{item.value}) </when>
-					<when test="item.oper == 'in' "> 
-						IN (<foreach collection="item.value" item="item" index="index" separator=","> ${item} </foreach>)
-					</when>
-					<otherwise> <![CDATA[ ${item.oper} ]]> #{item.value} </otherwise>
-				</choose>
-			</foreach>
-			
-			<if test="data.orderByList.size > 0">
-				ORDER BY
-				<foreach collection="data.orderByList" item="item" index="index" separator=",">
-					<choose>
-						<when test="item.field == 'id' "> ${primaryKeyName} </when>
-						<otherwise> ${item.field} </otherwise>
-					</choose>
-					${item.oper}
-				</foreach>
-			</if>
-			
-			<if test="data.limitSize != null ">
-				LIMIT ${data.limitIndex}, ${data.limitSize}
-			</if>
-		</if>
-	</select>
-	
-	<select id="countByQueryBuilder" resultType="Long">
-		SELECT COUNT(1) FROM ${tableName} WHERE 1=1
-		<foreach collection="data.operExpressList" item="item" index="index"> 
+<mapper namespace="ormybaits_sql">
+
+	<sql id="whereBuilder_sql">
+		<foreach collection="whereBuilder.operExpressList" item="item" index="index"> 
 			AND 
 			<choose>
 				<when test="item.field == 'id' "> ${primaryKeyName} </when>
@@ -51,95 +13,81 @@
 				<when test="item.oper == 'like' "> LIKE CONCAT('%', #{item.value}, '%') </when>
 				<when test="item.oper == 'like_left' "> LIKE CONCAT(#{item.value}, '%') </when>
 				<when test="item.oper == 'like_right' "> LIKE CONCAT('%', #{item.value}) </when>
+				<when test="item.oper == 'in' ">
+					IN (<foreach collection="item.value" item="item" index="index" separator=","> ${item} </foreach>)
+				</when>
 				<otherwise> <![CDATA[ ${item.oper} ]]> #{item.value} </otherwise>
 			</choose>
 		</foreach>
+	</sql>
+	
+	<select id="selecListByWhereBuilder" parameterType="cn.bblink.common.ormybatis.bean.mapping.SelectMappingParamBean" resultType="map">
+		SELECT * FROM ${tableName} WHERE 1=1 
+		<if test="whereBuilder != null">
+			<include refid="whereBuilder_sql" />
+			
+			<if test="whereBuilder.orderByList.size > 0">
+				ORDER BY
+				<foreach collection="whereBuilder.orderByList" item="item" index="index" separator=",">
+					<choose>
+						<when test="item.field == 'id' "> ${primaryKeyName} </when>
+						<otherwise> ${item.field} </otherwise>
+					</choose>
+					${item.oper}
+				</foreach>
+			</if>
+			
+			<if test="whereBuilder.limitSize != null ">
+				LIMIT ${whereBuilder.limitIndex}, ${whereBuilder.limitSize} 
+			</if>
+		</if>
 	</select>
 	
-	<insert id="insert" useGeneratedKeys="true" keyProperty="insertId">
+	<select id="countByWhereBuilder" parameterType="cn.bblink.common.ormybatis.bean.mapping.SelectMappingParamBean" resultType="Long">
+		SELECT COUNT(1) FROM ${tableName} WHERE 1=1
+		<include refid="whereBuilder_sql" />
+	</select>
+	
+	<insert id="insert" parameterType="cn.bblink.common.ormybatis.bean.mapping.InsertMappingParamBean" useGeneratedKeys="true" keyProperty="insertId">
 		insert into ${tableName}(
-			<foreach collection="data" item="value" index="key" separator=",">
+			<foreach collection="poMap" item="value" index="key" separator=",">
 				<if test="key != 'id' ">${key}</if>
 			</foreach>
 		)
-		values
-		(
-			<foreach collection="data" item="value" index="key" separator=",">
+		values (
+			<foreach collection="poMap" item="value" index="key" separator=",">
 				<if test="key != 'id' ">#{value}</if>
 			</foreach>
 		)
 	</insert>
 	
-	<insert id="insertBatch">
+	<insert id="insertBatch" parameterType="cn.bblink.common.ormybatis.bean.mapping.InsertBatchMappingParamBean">
 		insert into ${tableName}(
-			<foreach collection="data[0]" item="value" index="key" separator=",">
+			<foreach collection="poMapList[0]" item="value" index="key" separator=",">
 				<if test="key != 'id' ">${key}</if>
 			</foreach>
 		)
 		values
-		<foreach collection="data" item="item" index="index" separator=",">
+		<foreach collection="poMapList" item="item" index="index" separator=",">
 			(<foreach collection="item" item="value" index="key" separator=","><if test="key != 'id' ">#{value}</if></foreach>)
 		</foreach>
 	</insert>
-	 
-	<update id="updateByIdSelective">
-		UPDATE ${tableName}
-		<set>
-			<foreach collection="data" item="value" index="key" separator=",">
-				<if test=" key != 'id' and value != null "> ${key} = #{value}</if>
-			</foreach>
-		</set>
-		WHERE ${primaryKeyName} = #{data.id}
-	</update>
 	
-	<update id="updateById">
-		UPDATE ${tableName}
+	<update id="updateByBuilder" parameterType="cn.bblink.common.ormybatis.bean.mapping.UpdateMappingParamBean">
+		UPDATE ${tableName} 
 		<set>
-			<foreach collection="data" item="value" index="key" separator=",">
-				<if test=" key != 'id' "> ${key} = #{value}</if>
-			</foreach>
-		</set>
-		WHERE ${primaryKeyName} = #{data.id}
-	</update>
-	
-	<update id="updateByBuilder">
-		UPDATE ${tableName}
-		<set>
-			<foreach collection="data.updateQb.operExpressList" item="item" index="index" separator=",">
-				${item.field} =
+			<foreach collection="updateBuilder.operExpressList" item="item" index="index" separator=",">
 				<choose>
-					<when test="item.field == 'incr' "> ${item.field} + #{item.value} </when>
-					<otherwise> #{item.value} </otherwise>
+					<when test="item.field == 'id' ">  </when>
+					<when test="item.field == 'incr' ">${item.field} = ${item.field} + #{item.value} </when>
+					<otherwise>${item.field} = #{item.value} </otherwise>
 				</choose>
 			</foreach>
 		</set>
-		WHERE 1=1
-		<foreach collection="data.qb.operExpressList" item="item" index="index"> 
-			AND
-			<choose>
-				<when test="item.field == 'id' "> ${primaryKeyName} </when>
-				<otherwise> ${item.field} </otherwise>
-			</choose>
-			<choose>
-				<when test="item.oper == 'like' ">
-					LIKE CONCAT('%', #{item.value}, '%')
-				</when>
-				<when test="item.oper == 'like_left' ">
-					LIKE CONCAT(#{item.value}, '%')
-				</when>
-				<when test="item.oper == 'like_right' ">
-					LIKE CONCAT('%', #{item.value})
-				</when>
-				<otherwise> <![CDATA[ ${item.oper} ]]> #{item.value} </otherwise>
-			</choose>
-		</foreach>
+		WHERE 1=1 <include refid="whereBuilder_sql" />
 	</update>
 	
-	<delete id="deleteBatch">
-		DELETE FROM ${tableName} WHERE ${primaryKeyName} in (
-		<foreach collection="data" item="item" index="index" separator=",">
-			${item}
-		</foreach>
-		)
+	<delete id="delete" parameterType="cn.bblink.common.ormybatis.bean.mapping.DeleteMappingParamBean">
+		DELETE FROM ${tableName} WHERE 1=1 <include refid="whereBuilder_sql" />
 	</delete>
 </mapper>

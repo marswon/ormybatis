@@ -22,9 +22,8 @@ public class OperationExpressionBean {
 	public void setField(String field) {this.field = field;}
 
 	public String getOper() {return oper;}
-
 	public void setOper(String oper) {this.oper = oper;}
+	
 	public Object getValue() {return value;}
-
 	public void setValue(Object value) {this.value = value;}
 }

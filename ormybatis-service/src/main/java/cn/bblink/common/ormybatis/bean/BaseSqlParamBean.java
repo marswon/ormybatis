@@ -2,18 +2,15 @@ package cn.bblink.common.ormybatis.bean;
 
 public class BaseSqlParamBean {
 
-	private Object Data;//参数对象
 	private String tableName;//表名
 	private String primaryKeyName;//主键字段名
+	private Object Data;//参数对象
 	
 	private Long insertId;
 	
-	public Object getData() {
-		return Data;
-	}
-	public void setData(Object data) {
-		Data = data;
-	}
+	public Object getData() {return Data;}
+	public void setData(Object data) {Data = data;}
+	
 	public String getTableName() {
 		return tableName;
 	}

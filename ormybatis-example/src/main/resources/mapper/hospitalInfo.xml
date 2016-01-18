@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hospitalInfo">
+	<resultMap id="BaseResultMap" type="cn.bblink.common.ormybaits.example.HospitalInfo" >
+		<id column="hospital_id" property="id" jdbcType="BIGINT" />
+		<result column="hospital_name" property="hospitalName" jdbcType="VARCHAR" />
+		<result column="hospital_telephone" property="hospitalTelephone" jdbcType="VARCHAR" />
+		<result column="hospital_address" property="hospitalAddress" jdbcType="VARCHAR" />
+		<result column="hospital_website" property="hospitalWebsite" jdbcType="VARCHAR" />
+		<result column="hospital_level" property="hospitalLevel" jdbcType="VARCHAR" />
+		<result column="hospital_category" property="hospitalCategory" jdbcType="VARCHAR" />
+		<result column="hospital_locate" property="hospitalLocate" jdbcType="VARCHAR" />
+		<result column="hospital_traffic" property="hospitalTraffic" jdbcType="VARCHAR" />
+		<result column="hospital_park" property="hospitalPark" jdbcType="VARCHAR" />
+		<result column="hospital_around" property="hospitalAround" jdbcType="VARCHAR" />
+		<result column="province" property="province" jdbcType="VARCHAR" />
+		<result column="city" property="city" jdbcType="VARCHAR" />
+		<result column="area" property="area" jdbcType="VARCHAR" />
+		<result column="create_user_id" property="createUserId" jdbcType="BIGINT" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="modify_user_id" property="modifyUserId" jdbcType="BIGINT" />
+		<result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="hospital_logo_path" property="hospitalLogoPath" jdbcType="VARCHAR" />
+		<result column="hospital_outpatient" property="hospitalOutpatient" jdbcType="INTEGER" />
+		<result column="hospital_childbirth" property="hospitalChildbirth" jdbcType="INTEGER" />
+		<result column="hospital_weibo" property="hospitalWeibo" jdbcType="VARCHAR" />
+		<result column="hospital_weixin" property="hospitalWeixin" jdbcType="VARCHAR" />
+		<result column="hospital_cs_phone" property="hospitalCsPhone" jdbcType="VARCHAR" />
+		<result column="hospital_complain_phone" property="hospitalComplainPhone" jdbcType="VARCHAR" />
+		<result column="opening_time" property="openingTime" jdbcType="TIMESTAMP" />
+		<result column="hospital_new_lev" property="hospitalNewLev" jdbcType="VARCHAR" />
+		<result column="hospital_abbre" property="hospitalAbbre" jdbcType="VARCHAR" />
+		<result column="hospital_flower_num" property="hospitalFlowerNum" jdbcType="BIGINT" />
+		<result column="hospital_patient_num" property="hospitalPatientNum" jdbcType="BIGINT" />
+		<result column="visit_num" property="visitNum" jdbcType="INTEGER" />
+		<result column="hospital_desc" property="hospitalDesc" jdbcType="VARCHAR" />
+		<result column="hospital_feature" property="hospitalFeature" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="selectHosIdBycityCode" resultType="long">
+		select hospital_id from bblink_hospital_info WHERE city in
+		<foreach collection="list" index="index" item="item" open="(" separator="," close=")"> 
+            #{item}
+        </foreach>
+	</select>
+
+	<select id="byGwId" parameterType="string" resultMap="BaseResultMap">
+		select 
+			h.*
+		from hos_device hd ,bblink_hospital_info h ,device_gateway gw
+		where hd.hos_id= h.hospital_id 
+		and hd.gateway_id = gw.gateway_id
+		and gw.gw_id =  #{gwId}
+	</select>
+
+	<select id="getWorkCount" resultType="Long">
+		select count(DISTINCT hos_id) from hos_device where hos_id is not null and gateway_id is not null
+	</select>
+</mapper>

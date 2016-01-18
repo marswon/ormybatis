@@ -79,19 +79,12 @@ public interface IBaseOperationService<T> {
      */
     int update(T po);
 
-    /**
-     * 按po的id主键查找修改po,po属性为空则忽略更新
-     *
-     * @param po
-     * @return 修改记录数
-     */
-    int updateSelective(T po);
 
     /**
      * 批量删除
      *
-     * @param idList id主键集合
+     * @param ids id主键集合
      * @return 删除记录数
      */
-    int delete(List<Number> idList);
+    int delete(Number... ids);
 }

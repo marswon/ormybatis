@@ -68,13 +68,8 @@ public class BaseServiceImpl<T> implements IBaseOperationService<T> {
     }
 
     @Override
-    public int updateSelective(T po) {
-        return dao.updateSelective(po);
-    }
-
-    @Override
-    public int delete(List<Number> idList) {
-        return dao.delete(idList);
+    public int delete(Number... ids) {
+        return dao.delete(ids);
     }
 
 }

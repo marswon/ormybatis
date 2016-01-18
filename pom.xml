@@ -11,6 +11,7 @@
         <module>ormybatis-api</module>
         <module>ormybatis-service</module>
         <module>ormybatis-generate</module>
+        <module>ormybatis-example</module>
     </modules>
 
     <properties>
@@ -19,12 +20,6 @@
     </properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.13</version>
-		</dependency>
-
 		<!-- apache commons -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -51,6 +46,12 @@
 
     <dependencyManagement>
         <dependencies>
+        	<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.7.13</version>
+			</dependency>
+        	
             <!-- DB Related -->
             <dependency>
                 <groupId>org.mybatis</groupId>

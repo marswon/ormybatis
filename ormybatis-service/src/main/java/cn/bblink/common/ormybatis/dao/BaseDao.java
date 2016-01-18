@@ -25,19 +25,25 @@ import org.slf4j.LoggerFactory;
 
 import cn.bblink.common.ormybaits.paging.PagingBean;
 import cn.bblink.common.ormybatis.bean.BaseSqlParamBean;
-import cn.bblink.common.ormybatis.builder.QueryBuilder;
-import cn.bblink.common.ormybatis.builder.UpdateParamBuilder;
+import cn.bblink.common.ormybatis.bean.mapping.BaseMappingParam;
+import cn.bblink.common.ormybatis.bean.mapping.DeleteMappingParamBean;
+import cn.bblink.common.ormybatis.bean.mapping.InsertBatchMappingParamBean;
+import cn.bblink.common.ormybatis.bean.mapping.InsertMappingParamBean;
+import cn.bblink.common.ormybatis.bean.mapping.SelectMappingParamBean;
+import cn.bblink.common.ormybatis.bean.mapping.UpdateMappingParamBean;
+import cn.bblink.common.ormybatis.builder.UpdateBuilder;
+import cn.bblink.common.ormybatis.builder.WhereBuilder;
 import cn.bblink.common.ormybatis.util.ReflectUtil;
 
 import com.google.common.base.CaseFormat;
 
 public class BaseDao<T> extends SqlSessionTemplate {
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    /**
-     * base_sql.xml的namespace
-     */
-    private String BASE_SQL_NAMESPACE = "baseSql";
+	/**
+	 * ormybaits_sql.xml的namespace
+	 */
+	private String BASE_SQL_NAMESPACE = "ormybaits_sql";
 
     /**
      * mysql 主键字段名
@@ -62,7 +68,7 @@ public class BaseDao<T> extends SqlSessionTemplate {
 	 * @param paramMap 查询Map
 	 */
 	public PagingBean<T> paging(int page, int size, Map<String, Object> paramMap) {
-		return this.paging(page, size, new QueryBuilder().eq(paramMap));
+		return this.paging(page, size, new WhereBuilder().eq(paramMap));
 	}
 	
 	/**
@@ -71,7 +77,7 @@ public class BaseDao<T> extends SqlSessionTemplate {
 	 * @param size 每页记录数
 	 * @param qb 查询构造器
 	 */
-	public PagingBean<T> paging(int page, int size, QueryBuilder qb) {
+	public PagingBean<T> paging(int page, int size, WhereBuilder qb) {
 		PagingBean<T> pagingResult = new PagingBean<T>();
 		pagingResult.setPage(page);
 		pagingResult.setSize(size);
@@ -122,7 +128,7 @@ public class BaseDao<T> extends SqlSessionTemplate {
      * @return
      */
     public T selectOne(Number id) {
-        QueryBuilder qb = new QueryBuilder().eq(this.primaryKeyName, id);
+        WhereBuilder qb = new WhereBuilder().eq(this.primaryKeyName, id);
         return this.selectOne(qb);
     }
 
@@ -132,7 +138,7 @@ public class BaseDao<T> extends SqlSessionTemplate {
      * @return
      */
     public List<T> selectList(List<Number> ids) {
-        QueryBuilder qb = new QueryBuilder().in(this.primaryKeyName, ids);
+        WhereBuilder qb = new WhereBuilder().in(this.primaryKeyName, ids);
         return this.selectList(qb);
     }
 
@@ -146,7 +152,7 @@ public class BaseDao<T> extends SqlSessionTemplate {
      * @return
      */
     public T selectOne(Map<String, Object> paramMap) {
-        QueryBuilder qb = new QueryBuilder().eq(paramMap).orderDesc(this.primaryKeyName);
+        WhereBuilder qb = new WhereBuilder().eq(paramMap).orderDesc(this.primaryKeyName);
         return this.selectOne(qb);
     }
 
@@ -155,7 +161,7 @@ public class BaseDao<T> extends SqlSessionTemplate {
      * @param qb 查询构建builder对象
      * @return
      */
-    public T selectOne(QueryBuilder qb) {
+    public T selectOne(WhereBuilder qb) {
     	qb.limit(1);
         List<T> result = this.selectList(qb);
         if (CollectionUtils.isEmpty(result)) {
@@ -171,7 +177,7 @@ public class BaseDao<T> extends SqlSessionTemplate {
      * @return
      */
     public List<T> selectList(Map<String, Object> paramMap) {
-        QueryBuilder qb = new QueryBuilder().eq(paramMap);
+        WhereBuilder qb = new WhereBuilder().eq(paramMap);
         return this.selectList(qb);
     }
 
@@ -181,12 +187,11 @@ public class BaseDao<T> extends SqlSessionTemplate {
      * @param qb 查询构建builder对象
      * @return
      */
-    public List<T> selectList(QueryBuilder qb) {
-//		if (qb.isEmptyOperExpressList()) {
-//			return null;
-//		}
-        BaseSqlParamBean param = this.getBaseSqlParamBean(qb);
-        List<Map<String, Object>> mapList = super.selectList(this.getBaseSqlStatement("selecListByQueryBuilder"), param);
+    public List<T> selectList(WhereBuilder whereBuilder) {
+    	String statement = this.getBaseSqlStatement("selecListByWhereBuilder");
+    	SelectMappingParamBean selectMappingParamBean = new SelectMappingParamBean(whereBuilder);
+    	this.getMappingParam(selectMappingParamBean);
+        List<Map<String, Object>> mapList = super.selectList(statement, selectMappingParamBean);
         List<T> list = this.toPoList(mapList);
         return list;
     }
@@ -198,7 +203,7 @@ public class BaseDao<T> extends SqlSessionTemplate {
      * @return
      */
     public Long count(Map<String, Object> paramMap) {
-        QueryBuilder qb = new QueryBuilder().eq(paramMap);
+        WhereBuilder qb = new WhereBuilder().eq(paramMap);
         return this.count(qb);
     }
 
@@ -208,9 +213,11 @@ public class BaseDao<T> extends SqlSessionTemplate {
      * @param qb
      * @return
      */
-    public Long count(QueryBuilder qb) {
-        BaseSqlParamBean param = this.getBaseSqlParamBean(qb);
-        return super.selectOne(this.getBaseSqlStatement("countByQueryBuilder"), param);
+    public Long count(WhereBuilder whereBuilder) {
+    	String statement = this.getBaseSqlStatement("countByWhereBuilder");
+    	SelectMappingParamBean selectMappingParamBean = new SelectMappingParamBean(whereBuilder);
+    	this.getMappingParam(selectMappingParamBean);
+        return super.selectOne(statement, selectMappingParamBean);
     }
 
     /**
@@ -219,13 +226,14 @@ public class BaseDao<T> extends SqlSessionTemplate {
      * @param po
      * @return 插入记录数
      */
-    public int insert(T po) {
-        Map<String, Object> map = this.toMap(po);
-        BaseSqlParamBean param = this.getBaseSqlParamBean(map);
-        int num = super.insert(this.getBaseSqlStatement("insert"), param);
-        ReflectUtil.setBeanPropertyValue(po, "id", param.getInsertId());
-        return num;
-    }
+   public int insert(T po) {
+	   String statement = this.getBaseSqlStatement("insert");
+	   InsertMappingParamBean insertMappingParamBean = new InsertMappingParamBean(po);
+	   this.getMappingParam(insertMappingParamBean);
+	   int num = super.insert(statement, insertMappingParamBean);
+	   ReflectUtil.setBeanPropertyValue(po, "id", insertMappingParamBean.getInsertId());
+	   return num;
+   }
 
     /**
      * 批量插入
@@ -233,14 +241,11 @@ public class BaseDao<T> extends SqlSessionTemplate {
      * @param list PO记录集
      * @return 插入记录数
      */
-    public int insertBatch(List<T> list) {
-        List<Map<String, Object>> mapList = new ArrayList();
-        for (T po : list) {
-            Map<String, Object> map = this.toMap(po);
-            mapList.add(map);
-        }
-        BaseSqlParamBean param = this.getBaseSqlParamBean(mapList);
-        return super.insert(this.getBaseSqlStatement("insertBatch"), param);
+    public int insertBatch(List<T> poList) {
+    	String statement = this.getBaseSqlStatement("insertBatch");
+    	InsertBatchMappingParamBean insertBatchMappingParamBean = new InsertBatchMappingParamBean(poList);
+    	this.getMappingParam(insertBatchMappingParamBean);
+        return super.insert(statement, insertBatchMappingParamBean);
     }
 
     /**
@@ -264,70 +269,46 @@ public class BaseDao<T> extends SqlSessionTemplate {
      * @param qb
      * @return
      */
-    public int insertOrUpdate(T po, QueryBuilder qb) {
-        T selectPo = this.selectOne(qb);
-        if (selectPo != null) {
-            Object id = ReflectUtil.getBeanPropertyValue(selectPo, "id");
-            ReflectUtil.setBeanPropertyValue(po, "id", id);
-            return this.updateSelective(po);
+    public int insertOrUpdate(T po, WhereBuilder whereBuilder) {
+        T selectPo = this.selectOne(whereBuilder);
+        if (selectPo == null) {
+        	return this.insert(po);
         } else {
-            return this.insert(po);
+        	Object id = ReflectUtil.getBeanPropertyValue(selectPo, "id");
+            ReflectUtil.setBeanPropertyValue(po, "id", id);
+            return this.update(po);
         }
     }
 
     /**
-     * 按po的id主键查找修改po
+     * 按po的id主键查找修改po,为空的属性不修改
      *
      * @param po
      * @return 修改记录数
      */
     public int update(T po) {
-        Map<String, Object> map = this.toMap(po);
-        BaseSqlParamBean param = this.getBaseSqlParamBean(map);
-        return super.update(this.getBaseSqlStatement("updateById"), param);
-    }
-
-    /**
-     * 按po的id主键查找修改po,po属性为空则忽略更新
-     *
-     * @param po
-     * @return 修改记录数
-     */
-    public int updateSelective(T po) {
-        Map<String, Object> map = this.toMap(po);
-        BaseSqlParamBean param = this.getBaseSqlParamBean(map);
-        return super.update(this.getBaseSqlStatement("updateByIdSelective"), param);
-    }
-
-    /**
-     * 按指定的查询条件和修改字段来update记录
-     *
-     * @param updateFieldName 修改
-     * @param updateValue     修改的值
-     * @param whereFieldName  查询字段名
-     * @param whereValue      查询值
-     * @return 修改记录数
-     */
-    public int update(String updateFieldName, Object updateValue, String whereFieldName, Object whereValue) {
-        UpdateParamBuilder updateParamBuilder = new UpdateParamBuilder()
-                .set(updateFieldName, updateValue)
-                .whereEq(whereFieldName, whereValue);
-        return this.update(updateParamBuilder);
+        Map<String, Object> updateFieldMap = this.toMap(po);
+        UpdateBuilder updateBuilder = new UpdateBuilder()
+        	.updateEq(updateFieldMap)
+        	.whereEq(this.primaryKeyName, ReflectUtil.getBeanPropertyValue(po, "id"));
+        return this.update(updateBuilder);
     }
 
     /**
      * 通过参数构造器来update记录
      *
-     * @param updateParamBuilder 参数构造器
+     * @param updateBuilder 参数构造器
      * @return 修改记录数量
      */
-    public int update(UpdateParamBuilder updateParamBuilder) {
+    public int update(UpdateBuilder updateBuilder) {
         //如果where为空,不修改
-        if (updateParamBuilder.getQb().isEmptyOperExpressList()) {
+        if (updateBuilder.getWhereBuilder().isEmptyOperExpressList()) {
             return 0;
         }
-        BaseSqlParamBean param = this.getBaseSqlParamBean(updateParamBuilder);
-        return super.update(this.getBaseSqlStatement("updateByBuilder"), param);
+        String statement = this.getBaseSqlStatement("updateByBuilder");
+        UpdateMappingParamBean updateMappingParamBean =  new UpdateMappingParamBean(updateBuilder);
+        this.getMappingParam(updateMappingParamBean);
+        return super.update(statement, updateMappingParamBean);
     }
 
     /**
@@ -337,22 +318,26 @@ public class BaseDao<T> extends SqlSessionTemplate {
      * @return 删除记录数
      */
     public int delete(Number... ids) {
-        List<Number> idList = Arrays.asList(ids);
-        return this.delete(idList);
+        WhereBuilder whereBuilder = new WhereBuilder()
+        	.in(this.primaryKeyName, Arrays.asList(ids));
+        return this.delete(whereBuilder);
     }
-
+    
     /**
      * 批量删除
      *
-     * @param idList id主键集合
+     * @param whereBuilder where条件
      * @return 删除记录数
      */
-    public int delete(List<Number> idList) {
-        if (CollectionUtils.isEmpty(idList)) {
+    public int delete(WhereBuilder whereBuilder) {
+        //如果where为空,不修改
+        if (whereBuilder.isEmptyOperExpressList()) {
             return 0;
         }
-        BaseSqlParamBean param = this.getBaseSqlParamBean(idList);
-        return super.delete(this.getBaseSqlStatement("deleteBatch"), param);
+        String statement = this.getBaseSqlStatement("delete");
+        DeleteMappingParamBean deleteMappingParamBean = new DeleteMappingParamBean(whereBuilder);
+        this.getMappingParam(deleteMappingParamBean);
+        return super.delete(statement, deleteMappingParamBean);
     }
 
     /**
@@ -436,7 +421,7 @@ public class BaseDao<T> extends SqlSessionTemplate {
     }
 
     /**
-     * 得到base_sql.xml namespace
+     * 得到ormybaits_sql.xml namespace
      *
      * @param statement SQL语句的id标识
      * @return 全路径名的statement
@@ -458,14 +443,12 @@ public class BaseDao<T> extends SqlSessionTemplate {
     }
 
     /**
+     * 拼装基础Mapping参数
      * @return
      */
-    private BaseSqlParamBean getBaseSqlParamBean(Object data) {
-        BaseSqlParamBean param = new BaseSqlParamBean();
-        param.setData(data);
-        param.setPrimaryKeyName(this.primaryKeyName);
-        param.setTableName(this.tableName);
-        return param;
+    private void getMappingParam(BaseMappingParam baseMappingParam) {
+    	baseMappingParam.setPrimaryKeyName(this.primaryKeyName);
+    	baseMappingParam.setTableName(this.tableName);
     }
 
     /**
