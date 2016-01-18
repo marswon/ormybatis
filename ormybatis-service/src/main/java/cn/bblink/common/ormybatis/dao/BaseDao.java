@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cn.bblink.common.ormybaits.paging.PagingBean;
-import cn.bblink.common.ormybatis.bean.BaseSqlParamBean;
 import cn.bblink.common.ormybatis.bean.mapping.BaseMappingParam;
 import cn.bblink.common.ormybatis.bean.mapping.DeleteMappingParamBean;
 import cn.bblink.common.ormybatis.bean.mapping.InsertBatchMappingParamBean;

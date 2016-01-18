@@ -1,8 +1,6 @@
 package cn.bblink.common.ormybaits.example;
 
-import static cn.bblink.common.ormybaits.example.HospitalInfo.F_CREATE_TIME;
-import static cn.bblink.common.ormybaits.example.HospitalInfo.F_HOSPITAL_ID;
-import static cn.bblink.common.ormybaits.example.HospitalInfo.F_HOSPITAL_NAME;
+import static cn.bblink.common.ormybaits.example.HospitalInfo.*;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -123,10 +121,10 @@ public class HospitalInfoDaoTest {
     
     @Test
     public void updateBuilder() {
-    	Long id = 100L;
+    	Long id = 51L;
     	UpdateBuilder updateBuilder = new UpdateBuilder()
-    	.whereEq(F_HOSPITAL_ID, id)
-    	.upateEqNull(F_HOSPITAL_NAME);
+	    	.whereEq(F_HOSPITAL_ID, id)
+	    	.upateEqNull(F_HOSPITAL_NAME).upateIncr(F_CREATE_USER_ID);
     	int num = dao.update(updateBuilder);
     	log.debug("修改记录数 :{}", num);
     	log.debug("修改后的记录:{}", dao.selectOne(id));

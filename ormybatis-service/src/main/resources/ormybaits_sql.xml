@@ -79,7 +79,7 @@
 			<foreach collection="updateBuilder.operExpressList" item="item" index="index" separator=",">
 				<choose>
 					<when test="item.field == 'id' ">  </when>
-					<when test="item.field == 'incr' ">${item.field} = ${item.field} + #{item.value} </when>
+					<when test="item.oper == 'incr' ">${item.field} = ${item.field} + #{item.value} </when>
 					<otherwise>${item.field} = #{item.value} </otherwise>
 				</choose>
 			</foreach>
