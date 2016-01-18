@@ -38,23 +38,8 @@
 		<result column="hospital_feature" property="hospitalFeature" jdbcType="VARCHAR" />
 	</resultMap>
 	
-	<select id="selectHosIdBycityCode" resultType="long">
-		select hospital_id from bblink_hospital_info WHERE city in
-		<foreach collection="list" index="index" item="item" open="(" separator="," close=")"> 
-            #{item}
-        </foreach>
+	<select id="getNameById" parameterType="long" resultType="String">
+		select hospital_name from bblink_hospital_info WHERE hospital_id = #{id}
 	</select>
 
-	<select id="byGwId" parameterType="string" resultMap="BaseResultMap">
-		select 
-			h.*
-		from hos_device hd ,bblink_hospital_info h ,device_gateway gw
-		where hd.hos_id= h.hospital_id 
-		and hd.gateway_id = gw.gateway_id
-		and gw.gw_id =  #{gwId}
-	</select>
-
-	<select id="getWorkCount" resultType="Long">
-		select count(DISTINCT hos_id) from hos_device where hos_id is not null and gateway_id is not null
-	</select>
 </mapper>

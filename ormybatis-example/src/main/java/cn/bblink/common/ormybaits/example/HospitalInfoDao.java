@@ -16,4 +16,7 @@ public class HospitalInfoDao extends BaseDao<HospitalInfo>{
 		super.setTableName(HospitalInfo.DB_TABLE_NAME);
 	}
 	
+	public String getNameById(Long id){
+		return this.selectOne("getNameById", id);
+	}
 }

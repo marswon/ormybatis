@@ -31,6 +31,12 @@ public class HospitalInfoDaoTest {
     private HospitalInfoDao dao;
 
     @Test
+    public void getNameById() {
+    	String name = dao.getNameById(90L);
+    	log.info("getNameById name:[{}]", name);
+    }
+    
+    @Test
     public void paging() {
        WhereBuilder where = new WhereBuilder()
         	.likeRight(F_HOSPITAL_NAME, "保健院").orderDesc(F_HOSPITAL_ID);
