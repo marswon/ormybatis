@@ -6,18 +6,12 @@
 		<artifactId>ormybatis</artifactId>
 		<version>0.0.1</version>
 	</parent>
-	<artifactId>ormybatis-service</artifactId>
+	<artifactId>ormybatis-dao</artifactId>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>cn.bblink.common</groupId>
-			<artifactId>ormybatis-api</artifactId>
-			<version>0.0.1</version>
 		</dependency>
 		
 		<!-- DB Related -->

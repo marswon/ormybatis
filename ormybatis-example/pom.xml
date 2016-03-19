@@ -9,10 +9,10 @@
 	<artifactId>ormybatis-example</artifactId>
 
 	<properties>
-		<org.springframework.version>4.1.6.RELEASE</org.springframework.version>
 		<com.alibaba.fastjson.version>1.2.5</com.alibaba.fastjson.version>
 		<log4j2.version>2.4.1</log4j2.version>
 		<org.slf4j.version>1.7.13</org.slf4j.version>
+		<org.springframework.version>4.1.6.RELEASE</org.springframework.version>
 	</properties>
 
 	<dependencies>
@@ -32,22 +32,17 @@
 			<artifactId>log4j-slf4j-impl</artifactId>
 			<version>${log4j2.version}</version>
 		</dependency>
-		
+
 		<!-- db.. -->
 		<dependency>
 			<groupId>cn.bblink.common</groupId>
-			<artifactId>ormybatis-service</artifactId>
+			<artifactId>ormybatis-dao</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.37</version>
-		</dependency>
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>druid</artifactId>
-			<version>1.0.15 </version>
 		</dependency>
 
 		<!-- test -->
@@ -64,17 +59,11 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Spring -->
+		<!-- spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${org.springframework.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -86,17 +75,12 @@
 			<artifactId>spring-jdbc</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-expression</artifactId>
-			<version>${org.springframework.version}</version>
-		</dependency>
-		
+
 		<!-- others -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.16.6</version>
+			<version>1.16.8</version>
 		</dependency>
 	</dependencies>
 </project>
